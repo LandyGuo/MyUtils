@@ -25,7 +25,8 @@ params = {
     'bagging_freq': 5,
     'verbose': 0,
     'early_stopping_rounds':5,
-    'is_unbalance':True
+    'is_unbalance':True,
+    'num_threads':40,
 }
 
 lr = 0.25
