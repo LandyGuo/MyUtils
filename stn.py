@@ -122,11 +122,7 @@ def transformer(U, theta, out_size, name='SpatialTransformer2dAffine'):
             #                         np.linspace(-1, 1, height))
             #  ones = np.ones(np.prod(x_t.shape))
             #  grid = np.vstack([x_t.flatten(), y_t.flatten(), ones])
-            x_t = tf.matmul(
-                tf.ones(shape=tf.stack([height, 1])),
-                tf.transpose(tf.expand_dims(tf.linspace(-1.0, 1.0, width), 1), [1, 0])
-            )
-            y_t = tf.matmul(tf.expand_dims(tf.linspace(-1.0, 1.0, height), 1), tf.ones(shape=tf.stack([1, width])))
+            x_t, y_t = tf.meshgrid(tf.linspace(-1., 1., width), tf.linspace(-1., 1., height))
 
             x_t_flat = tf.reshape(x_t, (1, -1))
             y_t_flat = tf.reshape(y_t, (1, -1))
@@ -226,5 +222,5 @@ if __name__=='__main__':
 
     print("output shape:", output.shape)
 
-    cv2.imwrite('out_final.jpg', output)
+    cv2.imwrite('out_final6.jpg', output)
 
