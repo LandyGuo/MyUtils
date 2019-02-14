@@ -171,7 +171,8 @@ def transformer(U, theta, out_size, name='SpatialTransformer2dAffine'):
 def get_affine_matrix(input_image_shape, coords):
     """
     :param input_image_shape: origin image shape
-    :param coords: (8, ) float points in origin image
+    :param coords: (8, ) float points in origin image,
+                must be the order:[lt_x1,lt_y1,lb_x1,lb_y2,rb_x2,rb_y2,rt_x2,rt_y1]
     :return:
         affine_matrix: M,  used in spatial transform network
         outsize: target [height, width], used in spatial transform network
@@ -204,7 +205,7 @@ def get_affine_matrix(input_image_shape, coords):
 
     return affine_matrix, outsize
 
-# TODO3: extend to perspective transform 3x3 matrix
+# TODO3: extend to perspective transform
 
 if __name__=='__main__':
     input_image = cv2.imread("samples/c27ed4f30ce63db2a951a466cc00fbef_00030-C158FFEF-35AB-42fd-AC73-430E308D6DD2.JPG")
@@ -225,5 +226,5 @@ if __name__=='__main__':
 
     print("output shape:", output.shape)
 
-    cv2.imwrite('out_final5.jpg', output)
+    cv2.imwrite('out_final.jpg', output)
 
