@@ -184,18 +184,26 @@ def get_affine_matrix(input_image_shape, coords):
     four_point_coord = coords.reshape(-1, 2)
     side1 = np.sqrt(np.sum(np.square(four_point_coord[0] - four_point_coord[1])))
     side2 = np.sqrt(np.sum(np.square(four_point_coord[1] - four_point_coord[2])))
+
     long_side, short_side = max(side1, side2), min(side1, side2)
     outsize = (int(short_side), int(long_side)) # [height, width] output
+    outsize = (32, int(32.*outsize[1]/outsize[0])) # resize height to 32 for OCR
 
     # step3: use triangle define affine matrix, all transform are defined in image coord-system:[-1,1]
-    dest_coord = np.float32([[-1, -1],
-                             [-1, 1],
-                             [1, 1]])
+    if side1 < side2: # horizental box
+        dest_coord = np.float32([[-1, -1],
+                                 [-1, 1],
+                                 [1, 1]])
+
+    else: # vertical box
+        dest_coord = np.float32([[-1, 1],
+                                  [1, 1],
+                                  [1, -1]])
 
     # Note: here we need dst->src inverse transform
     affine_matrix = cv2.getAffineTransform(dest_coord, source_coord)
 
-    # Note: opencv apply affine matrix only work in original image space, not in [-1,1]. try your self
+    # Note: opencv apply affine matrix only work in original image space, not in [-1,1]. try yourself
     # warped = cv2.warpAffine(input_image, affine_matrix, (out_size[1], out_size[0]), cv2.INTER_LINEAR)
     # cv2.imwrite('warpped_image.jpg', warped)
 
@@ -204,16 +212,15 @@ def get_affine_matrix(input_image_shape, coords):
 # TODO3: extend to perspective transform
 
 if __name__=='__main__':
-    input_image = cv2.imread("samples/c27ed4f30ce63db2a951a466cc00fbef_00030-C158FFEF-35AB-42fd-AC73-430E308D6DD2.JPG")
+    input_image = cv2.imread("samples/00067e3bd541346bb58e8bd073dba73c_f5e82200-5f18-4b34-8958-699bc3740a46.jpg")
 
     # coords in counter_clock-wise, lty, ltx, lby, lbx,...
-    coords = np.float32([248.53, 173.99, 245.33, 203.85, 610.13, 213.45, 608.00, 182.52])
+    coords = np.float32([139.84, 115.20, 133.44, 149.76, 485.44, 205.44, 490.56, 161.92])
 
     from rotate_utils.rotate_coords_transform import RotateCoord
-    from rotate_utils.vis import mold_vertext_on_image
-
-    imgnp = mold_vertext_on_image(input_image, coords.reshape(-1, 2), 'VINCODE', 1.0)
-    cv2.imwrite('input.jpg', imgnp)
+    # from rotate_utils.vis import mold_vertext_on_image
+    # imgnp = mold_vertext_on_image(input_image, coords.reshape(-1, 2), 'VINCODE', 1.0)
+    cv2.imwrite('input.jpg', input_image)
 
     affine_matrix, out_size = get_affine_matrix(input_image.shape, coords)
 
